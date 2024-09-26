@@ -19,6 +19,7 @@ const getAllyoutube_data = (req,res ) => {
                 const formattedData = result.map(data => ({
                     id: data.id,
                     data : {
+                        title : data.title,
                         insight : [
                             {
                                 value : data.total_subscribers,
@@ -55,7 +56,7 @@ const postyoutube_data = async (req, res) => {
         imageURL2 = imageFile_2 ? await file.uploadFile(imageFile_2) : '';
         imageURL3 = imageFile_3 ? await file.uploadFile(imageFile_3) : '';
     
-        const { subscribers, views, title_1, description_1, year_1, brand_1, link_1, title_2, description_2, year_2, brand_2, link_2, title_3, description_3, year_3, brand_3, link_3 } = req.body;
+        const { subscribers, views, title_1, description_1, year_1, brand_1, link_1, title_2, description_2, year_2, brand_2, link_2, title_3, description_3, year_3, brand_3, link_3, title } = req.body;
     
         let itemsArray = [
             { title: title_1, description: description_1, year: year_1, brand: brand_1, imageurl: imageURL1, link: link_1 },
@@ -64,8 +65,8 @@ const postyoutube_data = async (req, res) => {
         ];
     
         const itemsArrayJson = JSON.stringify(itemsArray);
-        const sql = "INSERT INTO youtube_data (total_subscribers, total_views, last_post) VALUES (?, ?, ?)";
-        const values = [subscribers, views, itemsArrayJson];
+        const sql = "INSERT INTO youtube_data (title, total_subscribers, total_views, last_post) VALUES (?, ?, ?, ?)";
+        const values = [title, subscribers, views, itemsArrayJson];
     
         db.query(sql, values, (error, result) => {
             if (error) {
@@ -130,6 +131,7 @@ const getyoutube_databyID = (req,res ) => {
             } else {
                 const formattedData = result.map(data => ({
                     id: data.id,
+                    title : data.title,
                     data : {
                         insight : [
                             {
@@ -179,7 +181,7 @@ const deleteyoutube_databyID = (req, res) => {
 
 const putyoutube_data = async (req, res) => {
     const youtubeDataId = req.params.id;
-    const { subscribers, views, title_1, description_1, year_1, brand_1, title_2, description_2, year_2, brand_2, title_3, description_3, year_3, brand_3 } = req.body;
+    const { subscribers, views, title_1, description_1, year_1, brand_1, title_2, description_2, year_2, brand_2, title_3, description_3, year_3, brand_3, title } = req.body;
     const imageFile_1 = req.files && req.files['image_1'] && req.files['image_1'][0];
     const imageFile_2 = req.files && req.files['image_2'] && req.files['image_2'][0];
     const imageFile_3 = req.files && req.files['image_3'] && req.files['image_3'][0];
@@ -205,8 +207,8 @@ const putyoutube_data = async (req, res) => {
         updatedItems[2] = { ...updatedItems[2], title: title_3, description: description_3, year: year_3, brand: brand_3 };
 
         const itemsArrayJson = JSON.stringify(updatedItems);
-        const sql = "UPDATE youtube_data SET total_subscribers = ?, total_views = ?, last_post = ? WHERE id = ?";
-        const values = [subscribers, views, itemsArrayJson, youtubeDataId];
+        const sql = "UPDATE youtube_data SET title = ?, total_subscribers = ?, total_views = ?, last_post = ? WHERE id = ?";
+        const values = [title, subscribers, views, itemsArrayJson, youtubeDataId];
 
         db.query(sql, values, (error, result) => {
             if (error) {

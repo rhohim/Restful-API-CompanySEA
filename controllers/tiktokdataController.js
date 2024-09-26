@@ -17,6 +17,7 @@ const getAlltiktok_data = (req,res ) => {
             } else {
                 const formattedData = result.map(data => ({
                     id: data.id,
+                    title : data.title,
                     data : {
                         insight : [
                             {
@@ -53,7 +54,7 @@ const posttiktok_data = async (req,res) => {
         imageURL2 = imageFile_2 ? await file.uploadFile(imageFile_2) : '';
         imageURL3 = imageFile_3 ? await file.uploadFile(imageFile_3) : '';
         
-        const { followers, views, title_1, description_1, year_1, brand_1, link_1, title_2, description_2, year_2, brand_2, link_2, title_3, description_3, year_3, brand_3, link_3 } = req.body;
+        const { followers, views, title_1, description_1, year_1, brand_1, link_1, title_2, description_2, year_2, brand_2, link_2, title_3, description_3, year_3, brand_3, link_3, title } = req.body;
         
         let itemsArray = [
             { title: title_1, description: description_1, year: year_1, brand: brand_1, imageurl: imageURL1, link: link_1 },
@@ -63,8 +64,8 @@ const posttiktok_data = async (req,res) => {
     
         const itemsArrayJson = JSON.stringify(itemsArray);
     
-        const sql = "INSERT INTO tiktok_data (total_followers, total_views, last_post) VALUES (?, ?, ?)";
-        const values = [followers, views, itemsArrayJson];
+        const sql = "INSERT INTO tiktok_data (title, total_followers, total_views, last_post) VALUES (?, ?, ?, ?)";
+        const values = [title, followers, views, itemsArrayJson];
     
         db.query(sql, values, (error, result) => {
             if (error) {
@@ -129,6 +130,7 @@ const gettiktok_databyID = (req,res ) => {
             } else {
                 const formattedData = result.map(data => ({
                     id: data.id,
+                    title : data.title,
                     data : {
                         insight : [
                             {
@@ -178,7 +180,7 @@ const deletetiktok_databyID = (req, res) => {
 
 const puttiktok_data = async (req, res) => {
     const tiktokDataId = req.params.id;
-    const { followers, views, title_1, description_1, year_1, brand_1, title_2, description_2, year_2, brand_2, title_3, description_3, year_3, brand_3 } = req.body;
+    const { followers, views, title_1, description_1, year_1, brand_1, title_2, description_2, year_2, brand_2, title_3, description_3, year_3, brand_3, title } = req.body;
     const imagefile_1 = req.files && req.files['image_1'] && req.files['image_1'][0];
     const imagefile_2 = req.files && req.files['image_2'] && req.files['image_2'][0];
     const imagefile_3 = req.files && req.files['image_3'] && req.files['image_3'][0];
@@ -204,8 +206,8 @@ const puttiktok_data = async (req, res) => {
         updatedItems[2] = { ...updatedItems[2], title: title_3, description: description_3, year: year_3, brand: brand_3 };
 
         const itemsArrayJson = JSON.stringify(updatedItems);
-        const sql = "UPDATE tiktok_data SET total_followers = ?, total_views = ?, last_post = ? WHERE id = ?";
-        const values = [followers, views, itemsArrayJson, tiktokDataId];
+        const sql = "UPDATE tiktok_data SET  title = ?,total_followers = ?, total_views = ?, last_post = ? WHERE id = ?";
+        const values = [title, followers, views, itemsArrayJson, tiktokDataId];
 
         db.query(sql, values, (error, result) => {
             if (error) {

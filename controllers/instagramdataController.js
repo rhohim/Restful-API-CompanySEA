@@ -18,6 +18,7 @@ const getAllig_data = (req,res ) => {
             } else {
                 const formattedData = result.map(data => ({
                     id: data.id,
+                    title : data.title,
                     data : {
                         insight : [
                             {
@@ -52,16 +53,16 @@ const postig_data = async (req,res) => {
         imageURL2 = imageFile2 ? await file.uploadFile(imageFile2) : ''
         imageURL3 = imageFile3 ? await file.uploadFile(imageFile3) : ''
 
-        const { followers, er, title_1, description_1, year_1, brand_1, title_2, link_1, description_2, year_2, brand_2, link_2, title_3, description_3, year_3, brand_3, link_3 } = req.body;
+        const { followers, er, title_1, description_1, year_1, brand_1, title_2, link_1, description_2, year_2, brand_2, link_2, title_3, description_3, year_3, brand_3, link_3, title } = req.body;
         let itemsArray = [
             { title: title_1, description: description_1, year: year_1, brand: brand_1, imageurl: imageURL1, link : link_1 },
             { title: title_2, description: description_2, year: year_2, brand: brand_2, imageurl: imageURL2, link : link_2 },
             { title: title_3, description: description_3, year: year_3, brand: brand_3, imageurl: imageURL3, link : link_3 }
         ];
         console.log(followers,er,imageURL1,imageURL2,imageURL3);
-        const sql = "INSERT INTO ig_data ( total_followers, ER, last_post) VALUES (?, ?, ?)"
+        const sql = "INSERT INTO ig_data ( title, total_followers, ER, last_post) VALUES (?, ?, ?, ?)"
         const itemsArrayJson = JSON.stringify(itemsArray);
-        const value = [followers, er ,itemsArrayJson]
+        const value = [title, followers, er ,itemsArrayJson]
 
 
         db.query(sql, value, (error, result) => {
@@ -131,6 +132,7 @@ const getig_databyID = (req,res ) => {
             } else {
                 const formattedData = result.map(data => ({
                     id: data.id,
+                    title : data.title,
                     data : {
                         insight : [
                             {
@@ -173,14 +175,14 @@ const deleteig_databyID = (req, res) => {
                 res.json({
                     message: "deleted"
                 });
-            }
+            } 
         }
     });
 }
 
 const putig_data = async (req, res) => {
     const igDataId = req.params.id;
-    const { followers, er, title_1, description_1, year_1, brand_1, link_1, title_2, description_2, year_2, brand_2, link_2, title_3, description_3, year_3, brand_3, link_3 } = req.body;
+    const { followers, er, title_1, description_1, year_1, brand_1, link_1, title_2, description_2, year_2, brand_2, link_2, title_3, description_3, year_3, brand_3, link_3, title } = req.body;
     const imageFile1 = req.files && req.files['image_1'] && req.files['image_1'][0]
     const imageFile2 = req.files && req.files['image_2'] && req.files['image_2'][0]
     const imageFile3 = req.files && req.files['image_3'] && req.files['image_3'][0]
@@ -204,8 +206,8 @@ const putig_data = async (req, res) => {
         updatedItems[2] = { ...updatedItems[2], title: title_3, description: description_3, year: year_3, brand: brand_3, link : link_3 };
 
         const itemsArrayJson = JSON.stringify(updatedItems);
-        const sql = "UPDATE ig_data SET total_followers = ?, ER = ?, last_post = ? WHERE id = ?";
-        const values = [followers, er, itemsArrayJson, igDataId];
+        const sql = "UPDATE ig_data SET title = ? , total_followers = ?, ER = ?, last_post = ? WHERE id = ?";
+        const values = [title, followers, er, itemsArrayJson, igDataId];
 
         db.query(sql, values, (error, result) => {
             if (error) {

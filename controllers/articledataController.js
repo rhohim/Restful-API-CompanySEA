@@ -18,6 +18,7 @@ const getAllarticle_data = (req,res ) => {
                 const formattedData = result.map(data => ({
                     id: data.id,
                     data : {
+                        title : data.title,
                         insight : [
                             {
                                 value : data.total_visitor,
@@ -40,7 +41,7 @@ const getAllarticle_data = (req,res ) => {
         }      
     })
 }
-
+ 
 const postarticle_data = async (req, res) => {
     try {
         let imageURL1, imageURL2, imageURL3;
@@ -52,7 +53,7 @@ const postarticle_data = async (req, res) => {
         imageURL2 = imageFile_2 ? await file.uploadFile(imageFile_2) : ''
         imageURL3 = imageFile_3 ? await file.uploadFile(imageFile_3) : ''
         
-        const { visitor, article, title_1, description_1, year_1, brand_1, title_2, description_2, year_2, brand_2, title_3, description_3, year_3, brand_3 } = req.body;
+        const { visitor, article, title_1, description_1, year_1, brand_1, title_2, description_2, year_2, brand_2, title_3, description_3, year_3, brand_3, title} = req.body;
         let itemsArray = [
             { title: title_1, description: description_1, year: year_1, brand: brand_1, imageurl: imageURL1 },
             { title: title_2, description: description_2, year: year_2, brand: brand_2, imageurl: imageURL2 },
@@ -60,8 +61,8 @@ const postarticle_data = async (req, res) => {
         ];
 
         const itemsArrayJson = JSON.stringify(itemsArray);
-        const sql = "INSERT INTO article_data (total_visitor, total_article, last_post) VALUES (?, ?, ?)";
-        const values = [visitor, article, itemsArrayJson];
+        const sql = "INSERT INTO article_data (title, total_visitor, total_article, last_post) VALUES (?, ?, ?, ?)";
+        const values = [title, visitor, article, itemsArrayJson];
 
         db.query(sql, values, (error, result) => {
             if (error) {
@@ -129,6 +130,7 @@ const getarticle_databyID = (req,res ) => {
                 const formattedData = result.map(data => ({
                     id: data.id,
                     data : {
+                        title : data.title,
                         insight : [
                             {
                                 value : data.total_visitor,
@@ -177,7 +179,7 @@ const deletearticle_databyID = (req, res) => {
 
 const putarticle_data = async (req, res) => {
     const artcileID = req.params.id;
-    const { visitor, article, title_1, description_1, year_1, brand_1, title_2, description_2, year_2, brand_2, title_3, description_3, year_3, brand_3 } = req.body;
+    const { visitor, article, title_1, description_1, year_1, brand_1, title_2, description_2, year_2, brand_2, title_3, description_3, year_3, brand_3, title } = req.body;
     const imagefile_1 = req.files && req.files['image_1'] && req.files['image_1'][0]
     const imagefile_2 = req.files && req.files['image_2'] && req.files['image_2'][0]
     const imagefile_3 = req.files && req.files['image_3'] && req.files['image_3'][0]
@@ -203,8 +205,8 @@ const putarticle_data = async (req, res) => {
         updatedItems[2] = { ...updatedItems[2], title: title_3, description: description_3, year: year_3, brand: brand_3 };
 
         const itemsArrayJson = JSON.stringify(updatedItems);
-        const sql = "UPDATE article_data SET total_visitor = ?, total_article = ?, last_post = ? WHERE id = ?";
-        const values = [visitor, article, itemsArrayJson, artcileID];
+        const sql = "UPDATE article_data SET title = ? , total_visitor = ?, total_article = ?, last_post = ? WHERE id = ?";
+        const values = [title, visitor, article, itemsArrayJson, artcileID];
 
         db.query(sql, values, (error, result) => {
             if (error) {
