@@ -20,6 +20,7 @@ const getAllhistory = (req,res ) => {
                     id: data.id,
                     data : {
                         title : data.title,
+                        subtitle : data.subtitle,
                         date : data.date,
                         description : data.description,
                         background_color : data.background_color,
@@ -38,15 +39,15 @@ const getAllhistory = (req,res ) => {
 
 const posthistory = async (req, res) => {
     try{
-        const {title, date, description,background_color} = req.body
+        const {title, date, description,background_color, subtitle} = req.body
         const imageFile = req.files && req.files['image'] && req.files['image'][0]
         const bgimageFile = req.files && req.files['background_image'] && req.files['background_image'][0]
         let imageURL, bgimageURL 
         imageURL = imageFile ? await file.uploadFile(imageFile) : ''
         bgimageURL = bgimageFile ? await file.uploadFile(bgimageFile) : ''
 
-        const sql = "INSERT INTO history ( title, date, description,background_color, image, background_image) VALUES ( ?, ?, ?, ?, ?, ?)"
-        const value = [title, date, description,background_color, imageURL, bgimageURL]
+        const sql = "INSERT INTO history ( title, date, description,background_color, image, background_image, subtitle) VALUES ( ? ,?, ?, ?, ?, ?, ?)"
+        const value = [title, date, description,background_color, imageURL, bgimageURL, subtitle]
 
         db.query(sql, value, (error, result) => {
             if (error) {
@@ -117,6 +118,7 @@ const gethistorybyID = (req, res) => {
                     id: result[0].id,
                     data : {
                         title : result[0].title,
+                        subtitle : result[0].subtitle,
                         date : result[0].date,
                         description : result[0].description,
                         background_color : result[0].background_color,
@@ -158,7 +160,7 @@ const deletehistorybyID = (req, res) => {
 
 const puthistory = async (req, res) => {
     const historyId = req.params.id;
-    const { title, date, description, background_color } = req.body;
+    const { title, date, description, background_color, subtitle } = req.body;
     let imageURL, background_imageURL
     const imageFile = req.files && req.files['image'] && req.files['image'][0] 
     const bgimageFile = req.files && req.files['background_image'] && req.files['background_image'][0]
@@ -184,8 +186,8 @@ const puthistory = async (req, res) => {
         imageURL = imageFile ? await file.uploadFile(imageFile) : await getImageURLFromDB();
         background_imageURL = bgimageFile ? await file.uploadFile(bgimageFile) : await getBgImageURLFromDB();
 
-        const sql = "UPDATE history SET title = ?, date = ?, description = ?, background_color = ?, image = ?, background_image = ? WHERE id = ?";
-        const values = [title, date, description, background_color, imageURL, background_imageURL, historyId];
+        const sql = "UPDATE history SET title = ?, date = ?, description = ?, background_color = ?, image = ?, background_image = ?, subtitle = ? WHERE id = ?";
+        const values = [title, date, description, background_color, imageURL, background_imageURL, subtitle, historyId];
 
         db.query(sql, values, (error, result) => {
             if (error) {
