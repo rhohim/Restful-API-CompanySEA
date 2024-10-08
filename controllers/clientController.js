@@ -3,7 +3,7 @@ const file = require("../config/filehandling")
 
   
 const getAllclient = (req,res ) => {
-    const baseSQL = "SELECT * FROM client";
+    const baseSQL = "SELECT * FROM client ORDER BY client_name ASC";
     const page = parseInt(req.query.page) || 1;
     const pageSize = parseInt(req.query.pageSize) || 15;
     const searchName = req.query.name ? `%${req.query.name}%` : null;
