@@ -3,7 +3,7 @@ const file = require("../config/filehandling")
 
   
 const getAllclient = (req,res ) => {
-    const baseSQL = "SELECT * FROM client ORDER BY client_name ASC";
+    const baseSQL = "SELECT * FROM client";
     const page = parseInt(req.query.page) || 1;
     const pageSize = parseInt(req.query.pageSize) || 15;
     const searchName = req.query.name ? `%${req.query.name}%` : null;
@@ -14,12 +14,17 @@ const getAllclient = (req,res ) => {
 
     // Extend SQL query with search condition if searchName is provided
     if (searchName) {
-        sql += " WHERE client_name LIKE ?";
+        sql += " WHERE LOWER(client_name) LIKE LOWER(?) ";
         params.push(searchName);
+        
+    } else {
+        // Apply pagination
+        sql += " ORDER BY client_name ASC LIMIT ?, ?";
+        params.push(start, pageSize);
     }
         
     // Apply pagination
-    sql += " LIMIT ?, ?";
+    sql += "  ORDER BY client_name ASC LIMIT ?, ?";
     params.push(start, pageSize);
 
     db.query(sql, params, (error, result) => {
